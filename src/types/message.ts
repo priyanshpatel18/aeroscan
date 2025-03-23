@@ -1,0 +1,5 @@
+export const CONNECTED = "CONNECTED";
+export const SENSOR_DATA = "SENSOR_DATA";
+export const INITIAL_DATA = "INITIAL_DATA";
+export const CREATE_TRANSACTION = "CREATE_TRANSACTION";
+export const USER_AUTH = "USER_AUTH";
