@@ -1,9 +1,11 @@
+"use client";
+
 import { decodeToken, web3auth } from "@/lib/web3auth";
 import { SolanaWallet } from "@web3auth/solana-provider";
 import { motion } from "framer-motion";
 import { CloudIcon, MapPinIcon } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Dispatch, FormEvent, SetStateAction, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";

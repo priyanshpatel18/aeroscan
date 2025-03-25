@@ -23,3 +23,22 @@ export interface SensorStats {
   avgSensorReading: number | null;
   dataPoints: number;
 }
+
+export const web3SessionExpiredError = "Error occurred while verifying params timesigned is more than 60 seconds ago"
+
+interface Reading {
+  temperature: number;
+  humidity: number;
+  sensorReading: number;
+  timestamp: number;
+}
+
+export interface TransactionData {
+  sensorId: string;
+  location: {
+    lat: number;
+    lng: number;
+    accuracy: number;
+  },
+  readings: Reading[]
+}

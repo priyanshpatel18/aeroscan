@@ -3,7 +3,7 @@ import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
 import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
 
 // Get this from .env file
-const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID ?? "";
+const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID || "";
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.SOLANA,
@@ -13,6 +13,7 @@ const chainConfig = {
   blockExplorerUrl: "https://explorer.solana.com",
   ticker: "SOL",
   tickerName: "Solana",
+  logo: "https://images.toruswallet.io/solana.svg"
 };
 
 const privateKeyProvider = new SolanaPrivateKeyProvider({

@@ -1,6 +1,8 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8080";
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL;
 
 export function useSocket() {
   const socketRef = useRef<WebSocket | null>(null);
@@ -8,6 +10,10 @@ export function useSocket() {
 
   useEffect(() => {
     const connect = () => {
+      if (!WS_URL) {
+        console.error("WebSocket URL is not defined");
+        return;
+      }
       console.log("Attempting WebSocket connection...");
       socketRef.current = new WebSocket(WS_URL);
 

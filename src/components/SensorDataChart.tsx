@@ -1,5 +1,4 @@
 "use client";
-
 import { SensorData } from "@/types";
 import React, { useMemo } from "react";
 import {
@@ -62,7 +61,14 @@ export function SensorDataChart({ data }: { data: SensorData[] }) {
         />
         <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "8px", color: "#333" }} />
 
-        {/* Stacked Areas */}
+        <Area
+          type="monotone"
+          dataKey="sensorValue"
+          stroke="#ff1493"
+          fill="rgba(255, 20, 147, 0.4)"
+          strokeWidth={2}
+          name="Sensor Value"
+        />
         <Area
           type="monotone"
           dataKey="temperature"
@@ -70,7 +76,6 @@ export function SensorDataChart({ data }: { data: SensorData[] }) {
           fill="rgba(255, 69, 0, 0.4)"
           strokeWidth={2}
           name="Temperature (°C)"
-          stackId="1"
         />
         <Area
           type="monotone"
@@ -79,16 +84,6 @@ export function SensorDataChart({ data }: { data: SensorData[] }) {
           fill="rgba(30, 144, 255, 0.4)"
           strokeWidth={2}
           name="Humidity (%)"
-          stackId="1"
-        />
-        <Area
-          type="monotone"
-          dataKey="sensorValue"
-          stroke="#ff1493"
-          fill="rgba(255, 20, 147, 0.4)"
-          strokeWidth={2}
-          name="Sensor Value"
-          stackId="1"
         />
       </AreaChart>
     </ResponsiveContainer>

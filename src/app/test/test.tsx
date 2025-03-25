@@ -16,7 +16,6 @@ export default function SensorForm({ session }: { session: Session | null }) {
   const [publicAddress, setPublicAddress] = useState<string>("NONE");
   const [loading, setLoading] = useState<boolean>(false);
 
-
   const [sensorId, setSensorId] = useState<string>("");
   const [hash, setHash] = useState<string>("");
 

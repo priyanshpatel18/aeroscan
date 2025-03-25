@@ -1,22 +1,11 @@
 import { useAnchorProvider } from "@/components/Providers";
 import { useStore } from "@/store";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAeroscanProgram, getAeroscanProgramID } from "anchor/src/aeroscan-exports";
 import { BN } from "bn.js";
 import { useMemo } from "react";
 import { toast } from "sonner";
-
-export interface Poll {
-  pollId: number;
-  pollQuestion: string;
-  pollStart: number;
-  pollEnd: number;
-  pollCandidates: { candidateId: number; name: string }[];
-  pollVotes: number;
-  authority: PublicKey;
-}
 
 export interface Candidate {
   candidateId: number;
@@ -24,14 +13,13 @@ export interface Candidate {
   votes?: number;
 }
 
-export default function useAeroscan() {
+export function useAeroscan() {
   const provider = useAnchorProvider();
   const aeroscanProgramId = useMemo(() => getAeroscanProgramID(), [])
   const aeroscanProgram = useMemo(() => getAeroscanProgram(provider), [provider])
   const { setLoading } = useStore();
   const { publicKey } = useWallet();
   const queryClient = useQueryClient();
-
 
   const airQualityRecords = useQuery({
     queryKey: ["airQualityRecords"],
@@ -88,7 +76,7 @@ export default function useAeroscan() {
   return {
     aeroscanProgram,
     airQualityRecords,
-    createAirQualityRecord,
+    createBatchAirQualityRecord,
     aeroscanProgramId
   }
 }

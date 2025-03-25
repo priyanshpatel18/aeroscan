@@ -1,25 +1,8 @@
-import useAeroscan from "@/hooks/useAeroscan";
+import { TransactionData } from "@/types";
 import { Program } from "@coral-xyz/anchor";
 import { Aeroscan } from "@project/anchor";
 import { Transaction } from "@solana/web3.js";
 import { BN } from "bn.js";
-
-interface Reading {
-  temperature: number;
-  humidity: number;
-  sensorReading: number;
-  timestamp: number;
-}
-
-interface TransactionData {
-  sensorId: string;
-  location: {
-    lat: number;
-    lng: number;
-    accuracy: number;
-  },
-  readings: Reading[]
-}
 
 export default async function createTransaction(data: TransactionData, aeroscanProgram: Program<Aeroscan>) {
   const tx = new Transaction();
