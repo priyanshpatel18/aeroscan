@@ -1,13 +1,12 @@
 import { Metadata } from "next";
 
 const { title, description, ogImage, baseURL, appName } = {
-  title:
-    "Realtime",
+  title: "aeroscan",
   description:
-    "",
-  baseURL: "https://realtime-test.zerogames.fun",
-  ogImage: "",
-  appName: "",
+    "aeroscan is a personal air quality monitoring tool that tracks PM2.5, temperature, and humidity in real time. Stay informed about your environment with clear, simple insights.",
+  baseURL: "https://aeroscan.site",
+  ogImage: "/og-image.png",
+  appName: "aeroscan",
 };
 
 export const siteConfig: Metadata = {
@@ -44,6 +43,12 @@ export const siteConfig: Metadata = {
     canonical: baseURL,
   },
   keywords: [
-   
+    "air quality",
+    "AQI monitor",
+    "PM2.5 sensor",
+    "environment tracker",
+    "personal air monitor",
+    "ESP32 project",
+    "Aeroscan",
   ],
 };

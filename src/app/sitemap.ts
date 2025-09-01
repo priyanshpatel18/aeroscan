@@ -2,7 +2,7 @@ import fs from "fs";
 import type { MetadataRoute } from "next";
 import path from "path";
 
-const URL = "";
+const URL = "https://aeroscan.site";
 const baseDir = "src/app";
 const dynamicDirs = [""];
 const excludeDirs = [""];

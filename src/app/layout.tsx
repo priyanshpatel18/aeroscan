@@ -3,6 +3,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { siteConfig } from '@/config/siteConfig';
 import '@solana/wallet-adapter-react-ui/styles.css';
 import "./globals.css";
+import { inter } from '@/fonts';
 
 export const metadata = siteConfig;
 
@@ -13,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning>
+      <body suppressHydrationWarning className={`${inter.className}`}>
         <AppProviders>
           {children}
           <Toaster />
