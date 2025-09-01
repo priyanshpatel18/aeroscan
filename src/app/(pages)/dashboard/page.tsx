@@ -1,9 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { LineChart } from "@tremor/react"
 import { montserrat } from "@/fonts"
+import { useSocket } from "@/hooks/useSocket"
+import { MessageType } from "@/messages"
+import { toast } from "sonner"
 
 interface HistoryPoint {
   time: string
@@ -28,9 +31,26 @@ export default function DashboardPage() {
     aqi: undefined,
     history: [],
   })
+  const { socket } = useSocket()
 
-  // Later: you’ll call your custom websocket hook here,
-  // and update state with setData()
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleMessage = (event: MessageEvent) => {
+      const messageData = JSON.parse(event.data);
+      switch (messageData.type) {
+        case MessageType.WELCOME:
+          console.log(messageData.payload);
+          toast.success(messageData.payload);
+          break;
+      }
+    }
+
+    socket.addEventListener("message", handleMessage);
+    return () => {
+      socket.removeEventListener("message", handleMessage);
+    }
+  }, [socket])
 
   const getAQIStatus = (aqi?: number) => {
     if (aqi == null) return { label: "--", color: "bg-gray-400" }
