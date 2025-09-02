@@ -1,16 +1,20 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { LineChart } from "@tremor/react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { montserrat } from "@/fonts"
 import { useSocket } from "@/hooks/useSocket"
 import { MessageType } from "@/messages"
 import { toast } from "sonner"
+import { AQIChart } from "@/components/AQIChart"
+import { useEffect, useState } from "react"
 
-interface HistoryPoint {
-  time: string
-  AQI: number
+interface Reading {
+  timestamp: number
+  temperature: number
+  humidity: number
+  pm25: number
+  pm10: number
+  aqi: number
 }
 
 interface DashboardData {
@@ -19,37 +23,32 @@ interface DashboardData {
   temperature?: number
   humidity?: number
   aqi?: number
-  history?: HistoryPoint[]
+  history?: Reading[]
 }
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData>({
-    pm25: undefined,
-    pm10: undefined,
-    temperature: undefined,
-    humidity: undefined,
-    aqi: undefined,
-    history: [],
+    history: []
   })
   const { socket } = useSocket()
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) return
 
     const handleMessage = (event: MessageEvent) => {
-      const messageData = JSON.parse(event.data);
+      const messageData = JSON.parse(event.data)
       switch (messageData.type) {
         case MessageType.WELCOME:
-          console.log(messageData.payload);
-          toast.success(messageData.payload);
-          break;
+          toast.success(messageData.payload)
+          break
+        case MessageType.UPDATE_DATA:
+          setData(messageData.payload)
+          break
       }
     }
 
-    socket.addEventListener("message", handleMessage);
-    return () => {
-      socket.removeEventListener("message", handleMessage);
-    }
+    socket.addEventListener("message", handleMessage)
+    return () => socket.removeEventListener("message", handleMessage)
   }, [socket])
 
   const getAQIStatus = (aqi?: number) => {
@@ -73,33 +72,28 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className={`${montserrat.className}`}>PM2.5</CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">
-            {data.pm25 ?? "--"} µg/m³
-          </CardContent>
+          <CardContent className="text-2xl font-semibold">{data.pm25 ?? "--"} µg/m³</CardContent>
         </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className={`${montserrat.className}`}>PM10</CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">
-            {data.pm10 ?? "--"} µg/m³
-          </CardContent>
+          <CardContent className="text-2xl font-semibold">{data.pm10 ?? "--"} µg/m³</CardContent>
         </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className={`${montserrat.className}`}>Temperature</CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">
-            {data.temperature ?? "--"} °C
-          </CardContent>
+          <CardContent className="text-2xl font-semibold">{data.temperature ?? "--"} °C</CardContent>
         </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className={`${montserrat.className}`}>Humidity</CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">
-            {data.humidity ?? "--"} %
-          </CardContent>
+          <CardContent className="text-2xl font-semibold">{data.humidity ?? "--"} %</CardContent>
         </Card>
       </div>
 
@@ -110,9 +104,7 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent className="flex items-center gap-4">
           <div className={`w-4 h-4 rounded-full ${aqiStatus.color}`} />
-          <p className="text-lg font-medium">
-            {data.aqi ?? "--"} ({aqiStatus.label})
-          </p>
+          <p className="text-lg font-medium">{data.aqi ?? "--"} ({aqiStatus.label})</p>
         </CardContent>
       </Card>
 
@@ -123,14 +115,7 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           {data.history && data.history.length > 0 ? (
-            <LineChart
-              className="h-80"
-              data={data.history}
-              index="time"
-              categories={["AQI"]}
-              colors={["blue"]}
-              yAxisWidth={40}
-            />
+            <AQIChart history={data.history} />
           ) : (
             <p className="text-sm text-muted-foreground text-center py-12">
               No historical data available

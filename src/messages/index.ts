@@ -6,4 +6,5 @@ export enum MessageType {
   PONG = "PONG",
   HEARTBEAT = "HEARTBEAT",
   WELCOME = "WELCOME",
+  UPDATE_DATA = "UPDATE_DATA"
 }
