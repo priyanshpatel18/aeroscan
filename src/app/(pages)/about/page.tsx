@@ -14,21 +14,21 @@ export default function AboutPage() {
             About Aeroscan
           </h1>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Aeroscan is a personal air quality monitoring system powered by the
-            ESP32 microcontroller. It combines low-cost sensors with open-source
-            software to provide real-time environmental insights, enabling
-            experimentation with IoT, air quality sensing, and data analytics.
+            Aeroscan is a personal environmental monitoring system powered by
+            the ESP32 microcontroller. It focuses on real-time{" "}
+            <span className="font-semibold">temperature</span> and{" "}
+            <span className="font-semibold">humidity</span> insights, enabling
+            experimentation with IoT, climate sensing, and data analytics.
           </p>
         </section>
 
         <section className="space-y-4">
           <h2 className={`text-2xl font-semibold ${montserrat.className}`}>Our Mission</h2>
           <p className="text-base text-muted-foreground">
-            To democratize air quality monitoring by making affordable,
+            To democratize environmental monitoring by making affordable,
             open-source tools that empower individuals and communities to better
-            understand their environment. Aeroscan aims to provide a simple
-            prototype that sparks innovation in sustainable technology and
-            citizen-driven science.
+            understand their surroundings. Aeroscan aims to spark innovation in
+            sustainable technology and citizen-driven science.
           </p>
         </section>
 
@@ -39,18 +39,8 @@ export default function AboutPage() {
               <CardContent className="p-6 space-y-2">
                 <h3 className="text-xl font-medium">ESP32 Microcontroller</h3>
                 <p className="text-sm text-muted-foreground">
-                  Acts as the core processor, handling sensor data acquisition,
-                  AQI calculations, and Wi-Fi cloud communication.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-md">
-              <CardContent className="p-6 space-y-2">
-                <h3 className="text-xl font-medium">PMS7003 Sensor</h3>
-                <p className="text-sm text-muted-foreground">
-                  Measures particulate matter (PM1.0, PM2.5, PM10) with high
-                  sensitivity using laser scattering technology.
+                  Acts as the core processor, handling sensor data acquisition
+                  and Wi-Fi cloud communication.
                 </p>
               </CardContent>
             </Card>
@@ -59,18 +49,9 @@ export default function AboutPage() {
               <CardContent className="p-6 space-y-2">
                 <h3 className="text-xl font-medium">DHT22 Sensor</h3>
                 <p className="text-sm text-muted-foreground">
-                  Provides temperature and humidity data, adding environmental
-                  context to particulate matter readings.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-md">
-              <CardContent className="p-6 space-y-2">
-                <h3 className="text-xl font-medium">Cloud Integration</h3>
-                <p className="text-sm text-muted-foreground">
-                  Streams real-time data to a cloud endpoint for logging,
-                  visualization, and future analytics.
+                  Provides accurate <strong>temperature</strong> and{" "}
+                  <strong>humidity</strong> readings, giving essential
+                  environmental context.
                 </p>
               </CardContent>
             </Card>
@@ -80,11 +61,11 @@ export default function AboutPage() {
         <section className="space-y-4">
           <h2 className={`text-2xl font-semibold ${montserrat.className}`}>Data Accuracy & Calibration</h2>
           <p className="text-base text-muted-foreground">
-            Aeroscan is designed as an experimental prototype. While the
-            PMS7003 and DHT22 sensors offer reliable low-cost performance, they
-            are not calibrated against certified laboratory-grade instruments.
-            Readings provide a baseline for personal awareness and research, but
-            should not be used as regulatory-grade measurements.
+            Aeroscan is designed as an experimental prototype. While the DHT22
+            sensor provides reliable low-cost performance, it is not calibrated
+            against certified laboratory-grade instruments. Readings give a
+            useful baseline for awareness and research, but should not be used
+            for regulatory-grade measurements.
           </p>
         </section>
 
@@ -93,7 +74,7 @@ export default function AboutPage() {
           <p className="text-base text-muted-foreground">
             Aeroscan is open-source and welcomes contributions from developers,
             hardware enthusiasts, and environmental researchers. Whether it’s
-            improving the codebase, enhancing visualization tools, or sharing
+            improving the codebase, enhancing visualization tools, or exploring
             calibration techniques, your input is valuable.
           </p>
 

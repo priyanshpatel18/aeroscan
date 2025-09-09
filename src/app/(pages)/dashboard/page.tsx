@@ -37,7 +37,8 @@ export default function DashboardPage() {
         case MessageType.WELCOME:
           toast.success(messageData.payload.message)
           setData({
-            ...data,
+            temperature: messageData.payload.history.length > 0 ? messageData.payload.history[messageData.payload.history.length - 1].temperature : null,
+            humidity: messageData.payload.history.length > 0 ? messageData.payload.history[messageData.payload.history.length - 1].humidity : null,
             history: messageData.payload.history
           });
           break
