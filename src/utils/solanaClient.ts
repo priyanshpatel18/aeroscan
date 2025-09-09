@@ -62,7 +62,7 @@ export async function updateReading(
   const program = await getProgramClient();
 
   const tx = await program.methods
-    .updateReading(solanaProvider.wallet.publicKey, pm25, pm10, temperature, humidity, aqi)
+    .updateReading(magicblockProvider.wallet.publicKey, pm25, pm10, temperature, humidity, aqi)
     .accounts({
       sensorReading: SENSOR_READING_PDA,
     })
@@ -70,18 +70,18 @@ export async function updateReading(
 
   const {
     value: { blockhash, lastValidBlockHeight },
-  } = await solanaConnection.getLatestBlockhashAndContext();
+  } = await magicblockConnection.getLatestBlockhashAndContext();
 
   tx.recentBlockhash = blockhash;
-  tx.feePayer = solanaProvider.wallet.publicKey;
+  tx.feePayer = magicblockProvider.wallet.publicKey;
 
-  tx.sign((solanaProvider.wallet as anchor.Wallet).payer);
+  tx.sign((magicblockProvider.wallet as anchor.Wallet).payer);
 
-  const signature = await solanaConnection.sendRawTransaction(tx.serialize(), {
+  const signature = await magicblockConnection.sendRawTransaction(tx.serialize(), {
     skipPreflight: true,
   });
 
-  await solanaConnection.confirmTransaction(
+  await magicblockConnection.confirmTransaction(
     { blockhash, lastValidBlockHeight, signature },
     "processed"
   );

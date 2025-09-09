@@ -10,7 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { pirataOne } from "@/fonts";
-import { Activity, BarChart3, Info, Menu } from "lucide-react";
+import { Activity, Info, Menu } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -20,7 +20,7 @@ export default function AppBar() {
 
   const navigationItems = [
     { label: "Dashboard", href: "/dashboard", icon: Activity },
-    { label: "Analytics", href: "/analytics", icon: BarChart3 },
+    // { label: "Analytics", href: "/analytics", icon: BarChart3 },
     { label: "About", href: "/about", icon: Info },
   ];
 
@@ -86,7 +86,7 @@ export default function AppBar() {
                   aeroscan
                 </span>
                 <span className="text-xs text-muted-foreground hidden sm:block">
-                  Air Quality Monitor
+                  Climate Monitor
                 </span>
               </div>
             </div>
