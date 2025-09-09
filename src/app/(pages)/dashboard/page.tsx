@@ -55,7 +55,7 @@ export default function DashboardPage() {
   }, [socket])
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 mb-16">
       <h1 className={`text-2xl font-bold text-primary ${montserrat.className}`}>Dashboard</h1>
 
       {/* Current readings */}

@@ -47,7 +47,7 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="text-base" onClick={() => router.push("/analytics")}>
+            <Button size="lg" className="text-base" onClick={() => router.push("/dashboard")}>
               View Analytics
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
@@ -68,7 +68,7 @@ export default function HomePage() {
             Powered by
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="flex gap-4">
             {techStack.map((tech, index) => (
               <Link
                 key={index}

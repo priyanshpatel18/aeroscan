@@ -7,7 +7,7 @@ import { montserrat } from "@/fonts";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen flex flex-col p-6">
+    <div className="min-h-screen flex flex-col p-6 mb-16">
       <div className="container mx-auto max-w-4xl space-y-16 my-16">
         <section className="space-y-6 text-center">
           <h1 className={`text-4xl lg:text-5xl font-bold text-primary ${montserrat.className}`}>
