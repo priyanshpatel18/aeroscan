@@ -71,7 +71,7 @@ export function HumidityChart({ history }: HumidityChartProps) {
     datasets: [
       {
         label: "Humidity (%)",
-        data: history.map(r => ({ x: r.timestamp, y: r.humidity })),
+        data: averagedData,
         fill: true,
         backgroundColor: "rgba(16, 185, 129, 0.1)",
         borderColor: "rgb(16, 185, 129)",
