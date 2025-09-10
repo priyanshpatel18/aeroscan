@@ -3,6 +3,7 @@
 import { HumidityChart } from "@/components/charts/HumidityChart"
 import { TemperatureChart } from "@/components/charts/TemperatureChart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { TimeRangeSelector, getTimeRangeMinutes } from "@/components/ui/time-range-selector"
 import { montserrat } from "@/fonts"
 import { useSocket } from "@/hooks/useSocket"
 import { MessageType } from "@/messages"
@@ -26,6 +27,7 @@ interface DashboardData {
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData>({ history: [] })
+  const [timeRange, setTimeRange] = useState("1d")
   const { socket } = useSocket()
 
   useEffect(() => {
@@ -79,15 +81,30 @@ export default function DashboardPage() {
         </Card>
       </div>
 
+      {/* Time Range Selector */}
+      <div className="flex items-center justify-between">
+        <h2 className={`text-xl font-semibold ${montserrat.className}`}>Historical Data</h2>
+        <TimeRangeSelector
+          value={timeRange}
+          onValueChange={setTimeRange}
+          defaultValue="1d"
+        />
+      </div>
+
       {/* Charts */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card className="shadow-md rounded-2xl">
-          <CardHeader>
-            <CardTitle className={montserrat.className}>24-Hour Temperature</CardTitle>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <Card className="shadow-md rounded-2xl overflow-hidden">
+          <CardHeader className="pb-3">
+            <CardTitle className={`text-lg ${montserrat.className}`}>Temperature</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 pt-0">
             {data.history && data.history.length > 0 ? (
-              <TemperatureChart history={data.history} />
+              <div className="w-full overflow-hidden">
+                <TemperatureChart 
+                  history={data.history} 
+                  timeRangeMinutes={getTimeRangeMinutes(timeRange)}
+                />
+              </div>
             ) : (
               <p className="text-sm text-muted-foreground text-center py-8">
                 No historical data available
@@ -96,13 +113,18 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-md rounded-2xl">
-          <CardHeader>
-            <CardTitle className={montserrat.className}>24-Hour Humidity</CardTitle>
+        <Card className="shadow-md rounded-2xl overflow-hidden">
+          <CardHeader className="pb-3">
+            <CardTitle className={`text-lg ${montserrat.className}`}>Humidity</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 pt-0">
             {data.history && data.history.length > 0 ? (
-              <HumidityChart history={data.history} />
+              <div className="w-full overflow-hidden">
+                <HumidityChart 
+                  history={data.history} 
+                  timeRangeMinutes={getTimeRangeMinutes(timeRange)}
+                />
+              </div>
             ) : (
               <p className="text-sm text-muted-foreground text-center py-8">
                 No historical data available
