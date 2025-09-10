@@ -5,7 +5,7 @@ const bs58 = require("bs58").default;
 
 const PROGRAM_ID = new PublicKey("aero8wSmn3uAj5g5jYq92Rd2SQv2MtGxu1ZXfysfFHX");
 
-const RPC_URL = process.env.HELIUS_RPC_URL ?? "https://api.devnet.solana.com";
+const RPC_URL = process.env.HELIUS_RPC_URL || "https://api.devnet.solana.com";
 
 // Two separate connections
 // 1) Standard Solana RPC (for IDL + account fetching)
@@ -16,37 +16,66 @@ const magicblockConnection = new Connection("https://devnet.magicblock.app/", {
   wsEndpoint: "wss://devnet.magicblock.app/",
 });
 
-// Service wallet
-const secretKey = bs58.decode(process.env.PRIVATE_KEY || "");
-const serviceKeypair = Keypair.fromSecretKey(secretKey);
+// Lazy initialization to avoid build-time errors
+let serviceKeypair: Keypair | null = null;
+let solanaProvider: anchor.AnchorProvider | null = null;
+let magicblockProvider: anchor.AnchorProvider | null = null;
+let SENSOR_READING_PDA: PublicKey | null = null;
 
-// Providers
-const solanaProvider = new anchor.AnchorProvider(
-  solanaConnection,
-  new NodeWallet(serviceKeypair),
-  { preflightCommitment: "processed" }
-);
+function initializeKeypair(): Keypair {
+  const privateKey = process.env.PRIVATE_KEY;
+  if (!privateKey) {
+    throw new Error("PRIVATE_KEY environment variable is required");
+  }
 
-const magicblockProvider = new anchor.AnchorProvider(
-  magicblockConnection,
-  new NodeWallet(serviceKeypair),
-  { preflightCommitment: "processed" }
-);
+  try {
+    const secretKey = bs58.decode(privateKey);
+    return Keypair.fromSecretKey(secretKey);
+  } catch (error) {
+    throw new Error("Invalid PRIVATE_KEY format. Must be a valid base58 encoded string");
+  }
+}
+
+function initializeProviders() {
+  if (!serviceKeypair) {
+    serviceKeypair = initializeKeypair();
+  }
+  
+  if (!solanaProvider) {
+    solanaProvider = new anchor.AnchorProvider(
+      solanaConnection,
+      new NodeWallet(serviceKeypair),
+      { preflightCommitment: "processed" }
+    );
+  }
+
+  if (!magicblockProvider) {
+    magicblockProvider = new anchor.AnchorProvider(
+      magicblockConnection,
+      new NodeWallet(serviceKeypair),
+      { preflightCommitment: "processed" }
+    );
+  }
+
+  if (!SENSOR_READING_PDA) {
+    SENSOR_READING_PDA = PublicKey.findProgramAddressSync(
+      [Buffer.from("sensor_reading"), solanaProvider.wallet.publicKey.toBuffer()],
+      PROGRAM_ID
+    )[0];
+  }
+}
 
 // Cached Program client
 let program: anchor.Program | null = null;
 
-const [SENSOR_READING_PDA] = PublicKey.findProgramAddressSync(
-  [Buffer.from("sensor_reading"), solanaProvider.wallet.publicKey.toBuffer()],
-  PROGRAM_ID
-);
-
 async function getProgramClient(): Promise<anchor.Program> {
+  initializeProviders();
+  
   if (!program) {
-    const idl = await anchor.Program.fetchIdl(PROGRAM_ID, solanaProvider);
+    const idl = await anchor.Program.fetchIdl(PROGRAM_ID, solanaProvider!);
     if (!idl) throw new Error("IDL not found for program");
 
-    program = new anchor.Program(idl, solanaProvider);
+    program = new anchor.Program(idl, solanaProvider!);
     console.log("aeroscan client initialized!!");
   }
   return program;
@@ -59,12 +88,13 @@ export async function updateReading(
   humidity: number,
   aqi: number
 ): Promise<string> {
+  initializeProviders();
   const program = await getProgramClient();
 
   const tx = await program.methods
-    .updateReading(magicblockProvider.wallet.publicKey, pm25, pm10, temperature, humidity, aqi)
+    .updateReading(magicblockProvider!.wallet.publicKey, pm25, pm10, temperature, humidity, aqi)
     .accounts({
-      sensorReading: SENSOR_READING_PDA,
+      sensorReading: SENSOR_READING_PDA!,
     })
     .transaction();
 
@@ -73,9 +103,9 @@ export async function updateReading(
   } = await magicblockConnection.getLatestBlockhashAndContext();
 
   tx.recentBlockhash = blockhash;
-  tx.feePayer = magicblockProvider.wallet.publicKey;
+  tx.feePayer = magicblockProvider!.wallet.publicKey;
 
-  tx.sign((magicblockProvider.wallet as anchor.Wallet).payer);
+  tx.sign((magicblockProvider!.wallet as anchor.Wallet).payer);
 
   const signature = await magicblockConnection.sendRawTransaction(tx.serialize(), {
     skipPreflight: true,
