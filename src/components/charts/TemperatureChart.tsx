@@ -46,19 +46,41 @@ interface TemperatureChartProps {
   history: Reading[]
 }
 
+function aggregateByMinute(history: Reading[]) {
+  const groups: Record<number, { sum: number; count: number }> = {}
+
+  history.forEach(r => {
+    const minute = Math.floor(r.timestamp / 60000) * 60000 // round to nearest minute
+    if (!groups[minute]) {
+      groups[minute] = { sum: 0, count: 0 }
+    }
+    groups[minute].sum += r.temperature
+    groups[minute].count += 1
+  })
+
+  return Object.entries(groups).map(([minute, { sum, count }]) => ({
+    x: Number(minute),
+    y: sum / count
+  }))
+}
+
 export function TemperatureChart({ history }: TemperatureChartProps) {
+  const averagedData = aggregateByMinute(history)
+
   const chartData = {
     datasets: [
       {
         label: "Temperature (°C)",
-        data: history.map(r => ({ x: r.timestamp, y: r.temperature })),
+        data: averagedData,
         fill: true,
-        backgroundColor: "rgba(59, 130, 246, 0.1)", // blue-500 with opacity
-        borderColor: "rgb(59, 130, 246)", // blue-500
+        backgroundColor: "rgba(59, 130, 246, 0.1)",
+        borderColor: "rgb(59, 130, 246)",
         borderWidth: 2,
-        tension: 0.4,
+        tension: 0.6,
+        pointRadius: 1,
+        pointHoverRadius: 6,
         pointBackgroundColor: "rgb(59, 130, 246)",
-        pointBorderColor: "var(--background)",
+        pointBorderColor: "rgb(59, 130, 246)",
       }
     ]
   }
@@ -83,10 +105,10 @@ export function TemperatureChart({ history }: TemperatureChartProps) {
         padding: 12,
         displayColors: false,
         callbacks: {
-          title: function(context) {
+          title: function (context) {
             return new Date(context[0].parsed.x).toLocaleString()
           },
-          label: function(context) {
+          label: function (context) {
             return `Temperature: ${context.parsed.y} °C`
           }
         }
@@ -114,7 +136,7 @@ export function TemperatureChart({ history }: TemperatureChartProps) {
         beginAtZero: false,
         ticks: {
           color: "var(--muted-foreground)",
-          callback: function(value) {
+          callback: function (value) {
             return value + "°C"
           },
           font: { size: 11 }

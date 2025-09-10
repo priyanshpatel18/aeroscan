@@ -46,19 +46,41 @@ interface HumidityChartProps {
   history: Reading[]
 }
 
+function aggregateByMinute(history: Reading[]) {
+  const groups: Record<number, { sum: number; count: number }> = {}
+
+  history.forEach(r => {
+    const minute = Math.floor(r.timestamp / 60000) * 60000 // round to nearest minute
+    if (!groups[minute]) {
+      groups[minute] = { sum: 0, count: 0 }
+    }
+    groups[minute].sum += r.humidity
+    groups[minute].count += 1
+  })
+
+  return Object.entries(groups).map(([minute, { sum, count }]) => ({
+    x: Number(minute),
+    y: sum / count
+  }))
+}
+
 export function HumidityChart({ history }: HumidityChartProps) {
+  const averagedData = aggregateByMinute(history)
+
   const chartData = {
     datasets: [
       {
         label: "Humidity (%)",
         data: history.map(r => ({ x: r.timestamp, y: r.humidity })),
         fill: true,
-        backgroundColor: "rgba(16, 185, 129, 0.1)", // teal-500 with opacity
-        borderColor: "rgb(16, 185, 129)", // teal-500
+        backgroundColor: "rgba(16, 185, 129, 0.1)",
+        borderColor: "rgb(16, 185, 129)",
+        pointRadius: 1,
+        pointHoverRadius: 6,
         borderWidth: 2,
-        tension: 0.4,
+        tension: 0.6,
         pointBackgroundColor: "rgb(16, 185, 129)",
-        pointBorderColor: "var(--background)",
+        pointBorderColor: "rgba(16, 185, 129, 0.1)",
       }
     ]
   }
@@ -83,10 +105,10 @@ export function HumidityChart({ history }: HumidityChartProps) {
         padding: 12,
         displayColors: false,
         callbacks: {
-          title: function(context) {
+          title: function (context) {
             return new Date(context[0].parsed.x).toLocaleString()
           },
-          label: function(context) {
+          label: function (context) {
             return `Humidity: ${context.parsed.y} %`
           }
         }
@@ -113,7 +135,7 @@ export function HumidityChart({ history }: HumidityChartProps) {
         max: 100, // humidity goes up to 100%
         ticks: {
           color: "var(--muted-foreground)",
-          callback: function(value) {
+          callback: function (value) {
             return value + "%"
           },
           font: { size: 11 }
