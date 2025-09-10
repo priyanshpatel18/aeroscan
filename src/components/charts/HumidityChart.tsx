@@ -1,37 +1,7 @@
 "use client"
 
-import {
-  CategoryScale,
-  Chart as ChartJS,
-  ChartOptions,
-  Filler,
-  Legend,
-  LinearScale,
-  LineElement,
-  PointElement,
-  TimeScale,
-  Title,
-  Tooltip
-} from "chart.js"
-import 'chartjs-adapter-date-fns'
-import dynamic from "next/dynamic"
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-  TimeScale
-)
-
-const LineChart = dynamic(
-  () => import("react-chartjs-2").then(mod => mod.Line),
-  { ssr: false }
-)
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 interface Reading {
   timestamp: number
@@ -44,6 +14,7 @@ interface Reading {
 
 interface HumidityChartProps {
   history: Reading[]
+  timeRangeMinutes?: number
 }
 
 function aggregateByMinute(history: Reading[]) {
@@ -58,99 +29,77 @@ function aggregateByMinute(history: Reading[]) {
     groups[minute].count += 1
   })
 
-  return Object.entries(groups).map(([minute, { sum, count }]) => ({
-    x: Number(minute),
-    y: sum / count
-  }))
+  return Object.entries(groups)
+    .map(([minute, { sum, count }]) => ({
+      timestamp: Number(minute),
+      humidity: Math.round((sum / count) * 10) / 10, // round to 1 decimal
+      time: new Date(Number(minute)).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      })
+    }))
+    .sort((a, b) => a.timestamp - b.timestamp)
 }
 
-export function HumidityChart({ history }: HumidityChartProps) {
-  const averagedData = aggregateByMinute(history)
+const chartConfig = {
+  humidity: {
+    label: "Humidity",
+    color: "#10b981",
+  },
+}
 
-  const chartData = {
-    datasets: [
-      {
-        label: "Humidity (%)",
-        data: averagedData,
-        fill: true,
-        backgroundColor: "rgba(16, 185, 129, 0.1)",
-        borderColor: "rgb(16, 185, 129)",
-        pointRadius: 1,
-        pointHoverRadius: 6,
-        borderWidth: 2,
-        tension: 0.6,
-        pointBackgroundColor: "rgb(16, 185, 129)",
-        pointBorderColor: "rgba(16, 185, 129, 0.1)",
-      }
-    ]
-  }
-
-  const chartOptions: ChartOptions<"line"> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: {
-      intersect: false,
-      mode: "index"
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        mode: "index",
-        intersect: false,
-        backgroundColor: "var(--popover)",
-        bodyColor: "var(--popover-foreground)",
-        borderColor: "var(--border)",
-        borderWidth: 1,
-        cornerRadius: 8,
-        padding: 12,
-        displayColors: false,
-        callbacks: {
-          title: function (context) {
-            return new Date(context[0].parsed.x).toLocaleString()
-          },
-          label: function (context) {
-            return `Humidity: ${context.parsed.y} %`
-          }
-        }
-      }
-    },
-    scales: {
-      x: {
-        type: "time",
-        time: {
-          unit: "hour",
-          tooltipFormat: "PPpp",
-          displayFormats: { hour: "HH:mm" }
-        },
-        ticks: {
-          color: "var(--muted-foreground)",
-          maxTicksLimit: 8,
-          font: { size: 11 }
-        },
-        grid: { display: false },
-        border: { color: "var(--border)" }
-      },
-      y: {
-        beginAtZero: true,
-        max: 100, // humidity goes up to 100%
-        ticks: {
-          color: "var(--muted-foreground)",
-          callback: function (value) {
-            return value + "%"
-          },
-          font: { size: 11 }
-        },
-        grid: { display: false },
-        border: { color: "var(--border)" }
-      }
-    }
-  }
+export function HumidityChart({ history, timeRangeMinutes = 1440 }: HumidityChartProps) {
+  // Filter data based on time range
+  const now = Date.now()
+  const cutoffTime = now - (timeRangeMinutes * 60 * 1000)
+  const filteredHistory = history.filter(reading => reading.timestamp >= cutoffTime)
+  
+  const chartData = aggregateByMinute(filteredHistory)
 
   return (
-    <div className="w-full">
-      <div className="h-64 sm:h-72 md:h-80 lg:h-96 w-full">
-        <LineChart data={chartData} options={chartOptions} />
-      </div>
-    </div>
+    <ChartContainer config={chartConfig} className="h-[200px] sm:h-[250px] md:h-[300px] w-full">
+      <AreaChart
+        accessibilityLayer
+        data={chartData}
+        margin={{
+          left: 0,
+          right: 0,
+          top: 5,
+          bottom: 5,
+        }}
+      >
+        <CartesianGrid vertical={false} />
+        <XAxis
+          dataKey="time"
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          interval="preserveStartEnd"
+          tick={{ fontSize: 10 }}
+          minTickGap={20}
+        />
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          tick={{ fontSize: 10 }}
+          tickFormatter={(value) => `${value}%`}
+          domain={[0, 100]}
+          width={35}
+        />
+        <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent indicator="line" />}
+        />
+        <Area
+          dataKey="humidity"
+          type="natural"
+          fill="#10b981"
+          fillOpacity={0.4}
+          stroke="#10b981"
+        />
+      </AreaChart>
+    </ChartContainer>
   )
 }
