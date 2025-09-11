@@ -88,8 +88,11 @@ pnpm install
 ### 3. Environment Setup
 Create a `.env.local` file:
 ```env
-DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/aeroscan?schema=public"
-NEXT_PUBLIC_WS_URL = ws://localhost:5555
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/aeroscan?schema=public"
+NEXT_PUBLIC_WS_URL="ws://localhost:5555"
+PRIVATE_KEY="your-private-key-here"
+HELIUS_RPC_URL="https://rpc.helius.xyz/?api-key=your-api-key"
+MC_TOKEN="your-mc-token-here"
 ```
 
 ### 4. Run Development Server
