@@ -25,9 +25,6 @@ const timeRanges: TimeRange[] = [
   { value: "1d", label: "1 day", minutes: 1440 },
   { value: "1w", label: "1 week", minutes: 10080 },
   { value: "1M", label: "1 month", minutes: 43200 },
-  { value: "3M", label: "3 months", minutes: 129600 },
-  { value: "6M", label: "6 months", minutes: 259200 },
-  { value: "1y", label: "12 months", minutes: 525600 },
 ]
 
 const groupedRanges = {
